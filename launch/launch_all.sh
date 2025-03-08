@@ -87,8 +87,8 @@ run_pipeline() {
         3-alt)
           # preview camera 2 + log output
           gst-launch-1.0 -v udpsrc port=5601 \
-            caps='application/x-rtp,media=video,clock-rate=90000,encoding-name=(string)H264, payload=(int)96, width=(int)160, height=(int)120' \
-            ! rtph264depay ! rtph264pay config-interval=10 pt=96 ! udpsink host=192.168.137.255 port=5602 sync=false ! jpegenc ! multifilesink location=./source_images | tee "logs/stream2.log" &
+            caps='application/x-rtp,media=video,clock-rate=90000,encoding-name=(string)H264, payload=(int)96, width=(int)160, height=(int)120', framerate=0.5 \
+            ! rtph264depay ! rtph264pay config-interval=10 pt=96 ! udpsink host=192.168.137.255 port=5602 sync=false ! jpegenc ! multifilesink location=./source_images/%06.jpg | tee "logs/stream2.log" &
           ;;
         4)
           # preview camera 3 + log output
