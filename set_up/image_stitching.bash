@@ -6,6 +6,7 @@ sudo apt install -y libgtk-3-dev libopencv-dev libsdl2-dev libspdlog-dev cmake g
 cd ./xpano/build
 
 export XPANO="$(pwd)/xpano"
+pip install pillow
 
 cd ..
 cd ..

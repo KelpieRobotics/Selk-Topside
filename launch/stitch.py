@@ -7,6 +7,13 @@ from multiprocessing.connection import Connection
 
 import uuid
 
+def crop_image(image, crop_width, crop_height):
+    width, height = image.size
+    left = (width - crop_width) / 2
+    top = (height - crop_height) / 2
+    right = (width + crop_width) / 2
+    bottom = (height + crop_height) / 2
+    return image.crop((left, top, right, bottom))
 
 def _merge_images(images: List[str], output_name: str, output_conn: Connection, crop: Optional[Tuple[int, int]]):
     process = subprocess.Popen(
@@ -56,7 +63,7 @@ def merge_images(images: List[str], output_name:str, crop: Optional[Tuple[int, i
 
     return (process, rx)
 
-def windowed_stiching(directory: str, window_size: int, overlap: int = 1) -> List[str]:
+def windowed_stitching(directory: str, window_size: int, overlap: int = 1) -> List[str]:
     files = sorted(
         [f"./source_images/{f}" for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))],
         key=lambda x: int(os.path.basename(x).split('.')[0])  # Extract numeric part and sort
@@ -123,4 +130,4 @@ def windowed_stiching(directory: str, window_size: int, overlap: int = 1) -> Lis
     return new_files
 
 if __name__ == "__main__":
-    windowed_stiching("./source_images", 7)
+    windowed_stitching("./source_images", 7)
