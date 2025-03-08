@@ -18,6 +18,48 @@ rm -rf ./logs/*
 mkdir -p "./logs"
 mkdir -p "./snippets"
 
+# Image stitching
+main_loop() {
+    trap SIGINT
+    sleep 1 # Small time to actually to kill the process
+    # Just Spam CTRL-C 
+
+    trap "capture_images" INT
+    
+    parallel -j2 run_pipeline ::: 1 3 6 #5 # choose which pipelines to run
+
+    trap SIGINT 
+
+    exit
+}
+
+capture_images () {
+    trap SIGINT
+    sleep 1 # Small time to actually to kill the process
+
+    trap "stitch_images" INT
+
+    rm -rf ./source_images ./tmp;
+    mkdir ./source_images ./tmp;
+
+    parallel -j2 run_pipeline ::: 1 3-alt 6 #5 # choose which pipelines to run
+  
+    stitch_images
+}
+
+stitch_images() {
+    trap SIGINT
+    sleep 1 # Small time to actually to kill the process
+    trap "main_loop" INT;
+    python3 ./stitch.py;
+    # python3 ; # main.py should create a subproccess that listens to node and saves to specific folder & also stitches images
+    trap SIGINT;
+    $XPANO;
+    ./main.bash;
+    exit
+}
+
+
 # function to run gnu parallels
 run_pipeline() {
     case $1 in
@@ -36,6 +78,14 @@ run_pipeline() {
             2>&1 | tee "logs/stream1.log" &
           ;;
         3)
+          # preview camera 2 + log output
+          gst-launch-1.0 -v udpsrc port=5601 \
+            caps='application/x-rtp,media=video,clock-rate=90000,encoding-name=(string)H264, payload=(int)96, width=(int)160, height=(int)120' \
+            ! rtph264depay ! h264parse ! avdec_h264 \
+            ! queue ! videoconvert ! autovideosink \
+            2>&1 | tee "logs/stream2.log" &
+          ;;
+        3-alt)
           # preview camera 2 + log output
           gst-launch-1.0 -v udpsrc port=5601 \
             caps='application/x-rtp,media=video,clock-rate=90000,encoding-name=(string)H264, payload=(int)96, width=(int)160, height=(int)120' \
@@ -91,4 +141,6 @@ run_pipeline() {
 export -f run_pipeline
 
 # run all pipelines in parallel
-parallel -j2 run_pipeline ::: 1 3 6 #5 # choose which pipelines to run
+# parallel -j2 run_pipeline ::: 1 3 6 #5 # choose which pipelines to run
+
+main_loop
