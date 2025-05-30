@@ -15,6 +15,13 @@ sudo apt install -y libgtk-3-dev libopencv-dev libsdl2-dev libspdlog-dev cmake g
 # sudo ninja install
 # cd ..
 
+wget https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-1.18.5.tar.xz
+tar -xf gst-plugins-bad-1.18.5.tar.xz
+cd gst-plugins-bad-1.18.5
+meson setup build -Dopencv=enabled
+cd build
+
+
 sudo apt install -y python3-gi python3-gi-cairo gir1.2-gtk-4.0
 pip install pycairo
 pip install PyGObject
