@@ -46,7 +46,7 @@ def calibrate_camera(pipeline_desc: str, file_name: str):
         sys.exit(1)
 
     # Ensure output directory exists
-    output_dir = os.path.join("launch", "calibrate")
+    output_dir = os.path.join("calibrations")
     os.makedirs(output_dir, exist_ok=True)  # Create the full directory if not exists
 
     file_path = os.path.join(output_dir, f"{file_name}.xml")

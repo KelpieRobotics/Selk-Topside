@@ -39,7 +39,6 @@ run_pipeline() {
             ! rtph264depay ! h264parse ! avdec_h264 \
             ! queue \
             ! videoconvert \
-            ! cameracalibrate settings="file:./cam_2.xml" \
             ! tee name=t \
             t. ! queue ! videoconvert ! glimagesink sync=false \
             t. ! queue ! videoconvert \
@@ -57,7 +56,6 @@ run_pipeline() {
             ! rtph264depay ! h264parse ! avdec_h264 \
             ! queue \
             ! videoconvert \
-            ! cameracalibrate settings="file:./cam_2.xml" \
             ! tee name=t \
             t. ! queue ! videoconvert ! glimagesink sync=false \
             t. ! queue ! videoconvert \
@@ -83,7 +81,6 @@ run_pipeline() {
             ! rtph264depay ! h264parse ! avdec_h264 \
             ! queue \
             ! videoconvert \
-            ! cameracalibrate settings="file:./cam_3.xml" \
             ! tee name=t \
             t. ! queue ! videoconvert ! glimagesink sync=false \
             t. ! queue ! videoconvert \
