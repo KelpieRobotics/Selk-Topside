@@ -39,6 +39,7 @@ run_pipeline() {
             ! rtph264depay ! h264parse ! avdec_h264 \
             ! queue \
             ! videoconvert \
+            ! cameracalibrate settings="file:./cam_2.xml" \
             ! tee name=t \
             t. ! queue ! videoconvert ! glimagesink sync=false \
             t. ! queue ! videoconvert \
@@ -56,6 +57,7 @@ run_pipeline() {
             ! rtph264depay ! h264parse ! avdec_h264 \
             ! queue \
             ! videoconvert \
+            ! cameracalibrate settings="file:./cam_2.xml" \
             ! tee name=t \
             t. ! queue ! videoconvert ! glimagesink sync=false \
             t. ! queue ! videoconvert \
@@ -64,8 +66,9 @@ run_pipeline() {
               ! rtph264pay config-interval=10 pt=96 \
               ! udpsink host=127.0.0.1 port=5701 sync=false \
             # t. ! queue ! videoconvert ! intervideosink channel=cam_output sync=false\
-            2>&1 &
+            2>&1 & # | tee "logs/stream2.log" &
           ;;
+            # 
 
           # gst-launch-1.0 -v udpsrc port=5601 \
           #   caps='application/x-rtp,media=video,clock-rate=90000,encoding-name=(string)H264, payload=(int)96, width=(int)160, height=(int)120' \
@@ -80,6 +83,7 @@ run_pipeline() {
             ! rtph264depay ! h264parse ! avdec_h264 \
             ! queue \
             ! videoconvert \
+            ! cameracalibrate settings="file:./cam_3.xml" \
             ! tee name=t \
             t. ! queue ! videoconvert ! glimagesink sync=false \
             t. ! queue ! videoconvert \
