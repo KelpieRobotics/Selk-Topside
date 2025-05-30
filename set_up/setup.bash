@@ -10,8 +10,8 @@ pip install PyGObject
 # calibrate cameras need to be on
 
 
-gst-launch-1.0 -v udpsrc port=5601 caps="application/x-rtp, media=video, encoding-name=H264, payload=96" ! rtph264depay ! h264parse ! avdec_h264 ! queue ! cameracalibrate pattern=chessboard board-width=6 board-height=8 square-size=7.5 show-corners=true frame-count=25 ! output=cam_1.xml ! autovideosink
+gst-launch-1.0 -v udpsrc port=5601 caps="application/x-rtp, media=video, encoding-name=H264, payload=96" ! rtph264depay ! h264parse ! avdec_h264 ! queue ! cameracalibrate pattern=chessboard board-width=6 board-height=8 square-size=7 show-corners=true frame-count=25 ! output=cam_1.xml ! videoconvert ! autovideosink
 
-gst-launch-1.0 -v udpsrc port=5602 caps="application/x-rtp, media=video, encoding-name=H264, payload=96" ! rtph264depay ! h264parse ! avdec_h264 ! queue ! cameracalibrate pattern=chessboard board-width=6 board-height=8 square-size=7.5 show-corners=true frame-count=25 ! output=cam_1.xml ! autovideosink
+gst-launch-1.0 -v udpsrc port=5602 caps="application/x-rtp, media=video, encoding-name=H264, payload=96" ! rtph264depay ! h264parse ! avdec_h264 ! queue ! cameracalibrate pattern=chessboard board-width=6 board-height=8 square-size=7 show-corners=true frame-count=25 ! output=cam_1.xml ! videoconvert ! autovideosink
 
-gst-launch-1.0 -v udpsrc port=5603 caps="application/x-rtp, media=video, encoding-name=H264, payload=96" ! rtph264depay ! h264parse ! avdec_h264 ! queue ! cameracalibrate pattern=chessboard board-width=6 board-height=8 square-size=7.5 show-corners=true frame-count=25 ! output=cam_1.xml ! autovideosink
+gst-launch-1.0 -v udpsrc port=5603 caps="application/x-rtp, media=video, encoding-name=H264, payload=96" ! rtph264depay ! h264parse ! avdec_h264 ! queue ! cameracalibrate pattern=chessboard board-width=6 board-height=8 square-size=7 show-corners=true frame-count=25 ! output=cam_1.xml ! videoconvert ! autovideosink
