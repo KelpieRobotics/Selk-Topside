@@ -1,4 +1,5 @@
 sudo apt install gstreamer1.0-plugins-bad gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly gstreamer1.0-libav
+sudo apt install gstreamer1.0-opencv
 sudo apt install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev
 
 
@@ -11,15 +12,15 @@ sudo apt install -y libgtk-3-dev libopencv-dev libsdl2-dev libspdlog-dev cmake g
 # # sudo meson install
 
 
-git clone https://github.com/GStreamer/gst-plugins-bad.git
-cd ./gst-plugins-bad
+# git clone https://github.com/GStreamer/gst-plugins-bad.git
+# cd ./gst-plugins-bad
 
-meson -C build
-cd build
-ninja
-sudo ninja install
-cd ..
-cd ..
+# meson -C build
+# cd build
+# ninja
+# sudo ninja install
+# cd ..
+# cd ..
 
 
 sudo apt install -y python3-gi python3-gi-cairo gir1.2-gtk-4.0
