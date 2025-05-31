@@ -5,6 +5,7 @@ sudo apt install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstream
 sudo apt install -y libgtk-3-dev libopencv-dev libsdl2-dev libspdlog-dev cmake gcc g++ python3 python3-pip
 
 sudo apt install -y python3-gi python3-gi-cairo gir1.2-gtk-4.0
+sudo apt-get install python3-gst-1.0
 pip install pycairo
 pip install PyGObject
 # calibrate cameras need to be on
