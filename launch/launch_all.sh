@@ -34,35 +34,35 @@ run_pipeline() {
           #   ! queue ! videorate ! video/x-raw,framerate=0.2/1 \
           #   ! jpegenc ! multifilesink location="snippets/frame-%05d.jpg" \
           #   2>&1 | tee "logs/stream1.log" &
-            gst-launch-1.0 -v udpsrc port=5600 \
+            gst-launch-1.0 -v udpsrc port=5601 \
             caps="application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96" \
             ! rtph264depay ! h264parse ! avdec_h264 \
             ! queue \
             ! videoconvert \
             ! tee name=t \
-            t. ! queue ! videoconvert ! glimagesink sync=false \
-            t. ! queue ! videoconvert \
-              ! x264enc tune=zerolatency bitrate=500 speed-preset=superfast \
-              ! h264parse \
-              ! rtph264pay config-interval=10 pt=96 \
-              ! udpsink host=127.0.0.1 port=5700 sync=false \
-            # t. ! queue ! videoconvert ! intervideosink channel=cam_output sync=false\
-            2>&1 &
-          ;;
-        3)
-          # preview camera 2 + log output
-          gst-launch-1.0 -v udpsrc port=5601 \
-            caps="application/x-rtp, media=video, clock-rate=90000, encoding-name=(string)H264, payload=96, width=(int)160, height=(int)120" \
-            ! rtph264depay ! h264parse ! avdec_h264 \
-            ! queue \
-            ! videoconvert \
-            ! tee name=t \
-            t. ! queue ! videoconvert ! glimagesink sync=false \
+            t. ! queue ! videoconvert ! autovideosink sync=false \
             t. ! queue ! videoconvert \
               ! x264enc tune=zerolatency bitrate=500 speed-preset=superfast \
               ! h264parse \
               ! rtph264pay config-interval=10 pt=96 \
               ! udpsink host=127.0.0.1 port=5701 sync=false \
+            # t. ! queue ! videoconvert ! intervideosink channel=cam_output sync=false\
+            2>&1 &
+          ;;
+        3)
+          # preview camera 2 + log output
+          gst-launch-1.0 -v udpsrc port=5602 \
+            caps="application/x-rtp, media=video, clock-rate=90000, encoding-name=(string)H264, payload=96, width=(int)160, height=(int)120" \
+            ! rtph264depay ! h264parse ! avdec_h264 \
+            ! queue \
+            ! videoconvert \
+            ! tee name=t \
+            t. ! queue ! videoconvert ! autovideosink sync=false \
+            t. ! queue ! videoconvert \
+              ! x264enc tune=zerolatency bitrate=500 speed-preset=superfast \
+              ! h264parse \
+              ! rtph264pay config-interval=10 pt=96 \
+              ! udpsink host=127.0.0.1 port=5702 sync=false \
             # t. ! queue ! videoconvert ! intervideosink channel=cam_output sync=false\
             2>&1 & # | tee "logs/stream2.log" &
           ;;
@@ -71,29 +71,29 @@ run_pipeline() {
           # gst-launch-1.0 -v udpsrc port=5601 \
           #   caps='application/x-rtp,media=video,clock-rate=90000,encoding-name=(string)H264, payload=(int)96, width=(int)160, height=(int)120' \
           #   ! rtph264depay ! h264parse ! avdec_h264 \
-          #   ! queue ! videoconvert ! glimagesink sync=false \
+          #   ! queue ! videoconvert ! autovideosink sync=false \
           #   2>&1 | tee "logs/stream2.log" &
           # ;;
         4)
           # preview camera 3 + log output
-          gst-launch-1.0 -v udpsrc port=5602 \
+          gst-launch-1.0 -v udpsrc port=5603 \
             caps="application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96" \
             ! rtph264depay ! h264parse ! avdec_h264 \
             ! queue \
             ! videoconvert \
             ! tee name=t \
-            t. ! queue ! videoconvert ! glimagesink sync=false \
+            t. ! queue ! videoconvert ! autovideosink sync=false \
             t. ! queue ! videoconvert \
               ! x264enc tune=zerolatency bitrate=500 speed-preset=superfast \
               ! h264parse \
               ! rtph264pay config-interval=10 pt=96 \
-              ! udpsink host=127.0.0.1 port=5702 sync=false \
+              ! udpsink host=127.0.0.1 port=5703 sync=false \
             # t. ! queue ! videoconvert ! intervideosink channel=cam_output sync=false\
             2>&1 &
           # gst-launch-1.0 -v udpsrc port=5602 \
           #   caps='application/x-rtp,media=video,clock-rate=90000,encoding-name=(string)H264, payload=(int)96, width=(int)160, height=(int)120' \
           #   ! rtph264depay ! h264parse ! avdec_h264 \
-          #   ! queue ! videoconvert ! glimagesink sync=false \
+          #   ! queue ! videoconvert ! autovideosink sync=false \
             # 2>&1 | tee "logs/stream3.log" &
           ;;
         5)
