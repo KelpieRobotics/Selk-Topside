@@ -13,7 +13,7 @@ Gst.init(None)
 
 def create_pipeline(port: int, width: int, height: int, square_size: float) -> str:
     return f"""
-udpsrc port={port} caps="application/x-rtp, media=video, encoding-name=H264, payload=96" ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! queue ! cameracalibrate pattern=chessboard board-width={width} board-height={height} square-size={square_size} show-corners=true frame-count=25 ! videoconvert ! autovideosink
+udpsrc port={port} caps="application/x-rtp, media=video, encoding-name=H264, payload=96" ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! queue ! cameracalibrate pattern=chessboard board-width={width} board-height={height} square-size={square_size} show-corners=true frame-count=25 name=calib ! videoconvert ! autovideosink
 """
 
 def calibrate_camera(pipeline_desc: str, file_name: str):
