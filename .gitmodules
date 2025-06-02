@@ -1,0 +1,3 @@
+[submodule "launch/rov-sensor-broadcaster"]
+	path = launch/rov-sensor-broadcaster
+	url = https://github.com/KelpieRobotics/rov-sensor-broadcaster.git
