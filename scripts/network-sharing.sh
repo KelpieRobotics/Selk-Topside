@@ -1,7 +1,10 @@
 #!/usr/bin/bash
 
-systemctl start isc-dhcp-server
-sysctl -w net.ipv4.ip_forward=1
-iptables -A FORWARD -i enx00e04c6802fe -j ACCEPT
-iptables -t nat -A POSTROUTING -o wlp2s0 -j MASQUERADE
+ETHERNET_INTERFACE=enp42s0
+WIFI_INTERFACE=wlo1
+
+sudo systemctl start isc-dhcp-server
+sudo sysctl -w net.ipv4.ip_forward=1
+sudo iptables -A FORWARD -i ${ETHERNET} -j ACCEPT
+sudo iptables -t nat -A POSTROUTING -o ${WIFI} -j MASQUERADE
 

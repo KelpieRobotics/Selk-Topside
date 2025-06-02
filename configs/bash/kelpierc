@@ -1,0 +1,2 @@
+export ETHERNET_IF="enp42s0"
+export WIFI_IF="wlo1"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-sudo apt install isc-dhcp-server
+sudo apt install isc-dhcp-server -y
 
 # Disable DHCP server auto-start
 sudo systemctl stop isc-dhcp-server.service
