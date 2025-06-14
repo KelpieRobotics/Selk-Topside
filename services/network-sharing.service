@@ -1,0 +1,12 @@
+# https://gist.github.com/magnetikonline/29263ceed7cd8cee2861b26fb04332da
+[Unit]
+Description=Enable network sharing for companion computer
+After=network.target
+
+[Service]
+ExecStart=/opt/kelpie/scripts/network-sharing.sh
+RemainAfterExit=true
+Type=oneshot
+
+[Install]
+WantedBy=multi-user.target
