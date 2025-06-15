@@ -18,48 +18,6 @@ rm -rf ./logs/*
 mkdir -p "./logs"
 mkdir -p "./snippets"
 
-# Image stitching
-main_loop() {
-    trap SIGINT
-    sleep 1 # Small time to actually to kill the process
-    # Just Spam CTRL-C 
-
-    trap "capture_images" INT
-    
-    parallel -j2 run_pipeline ::: 1 3 6 #5 # choose which pipelines to run
-
-    trap SIGINT 
-
-    exit
-}
-
-capture_images () {
-    trap SIGINT
-    sleep 1 # Small time to actually to kill the process
-
-    trap "stitch_images" INT
-
-    rm -rf ./source_images ./tmp;
-    mkdir ./source_images ./tmp;
-
-    parallel -j2 run_pipeline ::: 1 3-alt 6 #5 # choose which pipelines to run
-  
-    stitch_images
-}
-
-stitch_images() {
-    trap SIGINT
-    sleep 1 # Small time to actually to kill the process
-    trap "main_loop" INT;
-    python3 ./stitch.py;
-    # python3 ; # main.py should create a subproccess that listens to node and saves to specific folder & also stitches images
-    trap SIGINT;
-    $XPANO;
-    ./main.bash;
-    exit
-}
-
-
 # function to run gnu parallels
 run_pipeline() {
     case $1 in
@@ -70,36 +28,73 @@ run_pipeline() {
           ;;
         2)
           # save snippets from camera 1 + log output (background to free up terminal)
-          gst-launch-1.0 -v udpsrc port=5600 \
-            caps='application/x-rtp,media=video,clock-rate=90000,encoding-name=(string)H264, payload=(int)96, width=(int)160, height=(int)120' \
+          # gst-launch-1.0 -v udpsrc port=5600 \
+          #   caps='application/x-rtp,media=video,clock-rate=90000,encoding-name=(string)H264, payload=(int)96, width=(int)160, height=(int)120' \
+          #   ! rtph264depay ! h264parse ! avdec_h264 \
+          #   ! queue ! videorate ! video/x-raw,framerate=0.2/1 \
+          #   ! jpegenc ! multifilesink location="snippets/frame-%05d.jpg" \
+          #   2>&1 | tee "logs/stream1.log" &
+            gst-launch-1.0 -v udpsrc port=5601 \
+            caps="application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96" \
             ! rtph264depay ! h264parse ! avdec_h264 \
-            ! queue ! videorate ! video/x-raw,framerate=0.2/1 \
-            ! jpegenc ! multifilesink location="snippets/frame-%05d.jpg" \
-            2>&1 | tee "logs/stream1.log" &
+            ! queue \
+            ! videoconvert \
+            ! tee name=t \
+            t. ! queue ! videoconvert ! autovideosink sync=false \
+            t. ! queue ! videoconvert \
+              ! x264enc tune=zerolatency bitrate=500 speed-preset=superfast \
+              ! h264parse \
+              ! rtph264pay config-interval=10 pt=96 \
+              ! udpsink host=127.0.0.1 port=5701 sync=false \
+            # t. ! queue ! videoconvert ! intervideosink channel=cam_output sync=false\
+            2>&1 &
           ;;
         3)
           # preview camera 2 + log output
-          gst-launch-1.0 -v udpsrc port=5601 \
-            caps='application/x-rtp,media=video,clock-rate=90000,encoding-name=(string)H264, payload=(int)96, width=(int)160, height=(int)120' \
+          gst-launch-1.0 -v udpsrc port=5602 \
+            caps="application/x-rtp, media=video, clock-rate=90000, encoding-name=(string)H264, payload=96, width=(int)160, height=(int)120" \
             ! rtph264depay ! h264parse ! avdec_h264 \
-            ! queue ! videoconvert ! autovideosink \
-            2>&1 | tee "logs/stream2.log" &
+            ! queue \
+            ! videoconvert \
+            ! tee name=t \
+            t. ! queue ! videoconvert ! autovideosink sync=false \
+            t. ! queue ! videoconvert \
+              ! x264enc tune=zerolatency bitrate=500 speed-preset=superfast \
+              ! h264parse \
+              ! rtph264pay config-interval=10 pt=96 \
+              ! udpsink host=127.0.0.1 port=5702 sync=false \
+            # t. ! queue ! videoconvert ! intervideosink channel=cam_output sync=false\
+            2>&1 & # | tee "logs/stream2.log" &
           ;;
-        3-alt)
-          # preview camera 2 + log output
-          gst-launch-1.0 -v udpsrc port=5601 \
-            caps='application/x-rtp,media=video,clock-rate=90000,encoding-name=(string)H264, payload=(int)96, width=(int)160, height=(int)120' \
-            ! rtph264depay ! h264parse ! avdec_h264 \
-            ! queue ! videoconvert ! autovideosink \
-            2>&1 | tee "logs/stream2.log" &
-          ;;
+            # 
+
+          # gst-launch-1.0 -v udpsrc port=5601 \
+          #   caps='application/x-rtp,media=video,clock-rate=90000,encoding-name=(string)H264, payload=(int)96, width=(int)160, height=(int)120' \
+          #   ! rtph264depay ! h264parse ! avdec_h264 \
+          #   ! queue ! videoconvert ! autovideosink sync=false \
+          #   2>&1 | tee "logs/stream2.log" &
+          # ;;
         4)
           # preview camera 3 + log output
-          gst-launch-1.0 -v udpsrc port=5602 \
-            caps='application/x-rtp,media=video,clock-rate=90000,encoding-name=(string)H264, payload=(int)96, width=(int)160, height=(int)120' \
+          gst-launch-1.0 -v udpsrc port=5603 \
+            caps="application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96" \
             ! rtph264depay ! h264parse ! avdec_h264 \
-            ! queue ! videoconvert ! autovideosink \
-            2>&1 | tee "logs/stream3.log" &
+            ! queue \
+            ! videoconvert \
+            ! tee name=t \
+            t. ! queue ! videoconvert ! autovideosink sync=false \
+            t. ! queue ! videoconvert \
+              ! x264enc tune=zerolatency bitrate=500 speed-preset=superfast \
+              ! h264parse \
+              ! rtph264pay config-interval=10 pt=96 \
+              ! udpsink host=127.0.0.1 port=5703 sync=false \
+            # t. ! queue ! videoconvert ! intervideosink channel=cam_output sync=false\
+            2>&1 &
+          # gst-launch-1.0 -v udpsrc port=5602 \
+          #   caps='application/x-rtp,media=video,clock-rate=90000,encoding-name=(string)H264, payload=(int)96, width=(int)160, height=(int)120' \
+          #   ! rtph264depay ! h264parse ! avdec_h264 \
+          #   ! queue ! videoconvert ! autovideosink sync=false \
+            # 2>&1 | tee "logs/stream3.log" &
           ;;
         5)
           # give time for windows to initialize
@@ -141,6 +136,4 @@ run_pipeline() {
 export -f run_pipeline
 
 # run all pipelines in parallel
-# parallel -j2 run_pipeline ::: 1 3 6 #5 # choose which pipelines to run
-
-main_loop
+parallel -j2 run_pipeline ::: 1 3 2 4 5
